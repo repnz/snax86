@@ -429,10 +429,10 @@ GameMain:
 	
 	.game_loop:
 		call PrintGameState
-		call PrintSnake
 		call CheckSnake
 		test eax, eax
 		jz .game_over
+		call PrintSnake
 		call SnakeSleep
 		call ClearSnake
 		call ProcessInput
@@ -445,7 +445,6 @@ GameMain:
 	ret
 
 GameOver:
-	call ClearSnake
 	call PrintGameOver
 	push dword GAME_OVER_SLEEP_TIME
 	call _Sleep@4
