@@ -330,12 +330,6 @@ GAME_OVER_MESSAGE_POS    equ 0
 
 ; ------------- strings -------------------------------------
 
-welcomeMessage db "Welcome to the Snake Game!", 0
-welcomeMessageLength equ ($ - welcomeMessage - 1)
-
-snakeDirectionMessage db "Direction=", 0
-snakeDirectionMessageLength equ ($ - snakeDirectionMessage - 1)
-
 gameScoreMessage db "Score: ", 0
 gameScoreMessageLength equ ($ - gameScoreMessage - 1)
 
@@ -1052,7 +1046,7 @@ GetConsoleAttributes: ; returns eax = zx(attributes)
 	add esp, 24 ; free CONSOLE_SCREEN_BUFFER_INFO
 	ret
 	
-ClearConsoleText:
+ClearConsoleText: ; Clear the consoles text
 	push ebp
 	mov ebp, esp
 	sub esp, 4 ; DWORD charactersWritten-4
@@ -1087,7 +1081,7 @@ SetCursorColor: ; bx = colors
 	
 ; --------------- Console Print Functions -------------------
 
-WriteStringPos: ; __stdcall (char* msg+8, COORD pos+12)
+WriteStringPos: ; __stdcall (char* msg[ebp+8], COORD pos[ebp+12])
 	push ebp
 	mov ebp, esp
 	push dword [ebp+12] ; COORD 
@@ -1100,7 +1094,7 @@ WriteStringPos: ; __stdcall (char* msg+8, COORD pos+12)
 	pop ebp
 	ret 8
 	
-WriteStringPosLen: ; __stdcall (char* msg+8, COORD pos+12, dword len+16)
+WriteStringPosLen: ; __stdcall (char* msg[ebp+8], COORD pos[ebp+12], dword len[ebp+16])
 	push ebp
 	mov ebp, esp
 	push dword [ebp+12] ; COORD pos
@@ -1112,7 +1106,7 @@ WriteStringPosLen: ; __stdcall (char* msg+8, COORD pos+12, dword len+16)
 	pop ebp
 	ret 12
 	
-WriteString: ; __stdcall (char* msg+8)
+WriteString: ; __stdcall (char* msg[ebp+8])
 	push ebp
 	mov ebp, esp
 	mov edi, dword [ebp+8] ; msg
@@ -1123,7 +1117,7 @@ WriteString: ; __stdcall (char* msg+8)
 	pop ebp
 	ret 4
 
-WriteStringLen: ; __stdcall (char* msg+8, dword+12 len)
+WriteStringLen: ; __stdcall (char* msg[ebp+8], dword len[ebp+12])
 	push ebp
 	mov ebp, esp
 	push NULL            ; lpOverlapped
@@ -1132,19 +1126,19 @@ WriteStringLen: ; __stdcall (char* msg+8, dword+12 len)
     push dword [ebp+8]   ; lpBuffer
     push dword [hCurrentOutput] ; hFile
     call _WriteFile@20
-	test eax, eax
+	test eax, eax 
 	jz FatalError
 	pop ebp
 	ret 8
 	
-WriteChar: ; al = character
+WriteChar: ; al = character to write
 	mov byte [characterToWrite], al
 	push dword 1 ; len
 	push characterToWrite ; msg
 	call WriteStringLen
 	ret
 	
-WriteDec: ; eax = integer
+WriteDec: ; eax = integer to write
 	push edi
 	mov edi, (decimalCharactersBufferLength-1)
 	
@@ -1189,7 +1183,7 @@ WriteCharPos: ; bl = character, eax = position
 	call WriteChar
 	ret
 
-Crlf:
+Crlf: ; Prints CRLF To the console
 	push dword 2
 	push dword crlfBuff
 	call WriteStringLen
