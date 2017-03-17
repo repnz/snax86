@@ -399,6 +399,7 @@ defaultConsoleCursorInfo times 2 dw 0
 ;   byte padding;
 ; }
 
+snakeDeletionPoint dd 0
 snakeLength dd 0
 snakeDirection dd 0
 snakePoints times 255 dd 0
@@ -432,9 +433,8 @@ GameMain:
 		call CheckSnake
 		test eax, eax
 		jz .game_over
-		call PrintSnake
+		call PrintChangedSnake
 		call SnakeSleep
-		call ClearSnake
 		call ProcessInput
 		call StepSnake
 		call CheckAppleEat
@@ -707,18 +707,16 @@ PrintGameState:
 	call WriteDec
 	ret
 	
-PrintSnakePart: ; eax = SnakePart*
+PrintSnakePart: ; eax = SnakePart
 	push ebx
 	mov bl, SNAKE_CHARACTER
-	mov eax, dword [eax]
 	call WriteCharPos
 	pop ebx
 	ret
 
-ClearSnakePart: ; eax = SnakePart*
+ClearSnakePart: ; eax = SnakePart
 	push ebx
 	mov bl, ' '
-	mov eax, dword [eax]
 	call WriteCharPos
 	pop ebx
 	ret
@@ -730,6 +728,17 @@ PrintSnake:
 	push PrintSnakePart
 	call IterateSnake
 	pop ebx
+	ret
+
+PrintChangedSnake:
+	mov eax, dword [snakeDeletionPoint]
+	test eax, eax
+	jz .print_next
+	call ClearSnakePart
+	
+.print_next:
+	mov eax, dword [snakePoints]
+	call PrintSnakePart
 	ret
 	
 ClearSnake:
@@ -770,9 +779,11 @@ CheckSnake: ; bool CheckSnake()
 	xor eax, eax
 	ret
 
-StepSnake: ; StepSnake();
+StepSnake: 
 	mov eax, dword [snakeLength]
 	dec eax
+	mov edx, dword [snakePoints+eax*4]
+	mov dword [snakeDeletionPoint], edx
 	
 	.step_snake:
 		mov edx, dword [snakePoints+eax*4-4]
@@ -785,7 +796,7 @@ StepSnake: ; StepSnake();
 	ret
 	
 		
-IterateSnake: ; __stdcall (SnakePartCallback(eax=SnakePart* p) callback)
+IterateSnake: ; __stdcall (SnakePartCallback(eax=SnakePart p) callback)
 	push ebp
 	mov ebp, esp
 	push ebx
@@ -794,7 +805,7 @@ IterateSnake: ; __stdcall (SnakePartCallback(eax=SnakePart* p) callback)
 	jmp .iteration_condition
 	
 	.next_point:
-		lea eax, [snakePoints+ebx*4] ; address of SnakePart
+		mov eax, [snakePoints+ebx*4] ; address of SnakePart
 		call dword [ebp+8]
 		inc ebx
 		

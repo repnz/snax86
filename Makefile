@@ -7,7 +7,7 @@ LIBS := lib\kernel32.lib
 OBJS := obj\snake.obj
 OBJS_DEBUG := obj\snake-debug.obj
 LINKER_FLAGS := /subsystem:console /nodefaultlib /entry:main /libpath:$(LIB_PATH) /MACHINE:X86
-LINKER_DEBUG_FALGS := $(LINKER_FLAGS) /debug
+LINKER_DEBUG_FLAGS := $(LINKER_FLAGS) /debug
 
 debug: bin\snake-debug.exe
 release: bin\snake.exe
@@ -17,8 +17,9 @@ bin\snake.exe: bin_dir obj_dir $(OBJS)
 	@echo "$@ has been created"
 
 bin\snake-debug.exe: bin_dir obj_dir $(OBJS_DEBUG)
-	$(LINKER) $(LINKER_FLAGS) $(OBJS_DEBUG) $(LIBS) /out:$@
+	$(LINKER) $(LINKER_DEBUG_FLAGS) $(OBJS_DEBUG) $(LIBS) /out:$@
 	@echo "$@ has been created"
+
 obj\snake-debug.obj: src\snake.asm
 	$(ASM) $(ASM_DEBUG_FLAGS) $< -o $@
 
