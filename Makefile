@@ -4,26 +4,26 @@ ASM_DEBUG_FLAGS := $(ASM_FLAGS) -g
 LINKER := link 
 LIB_PATH := lib
 LIBS := lib\kernel32.lib
-OBJS := obj\snake.obj
-OBJS_DEBUG := obj\snake-debug.obj
+OBJS := obj\snax86.obj
+OBJS_DEBUG := obj\snax86-debug.obj
 LINKER_FLAGS := /subsystem:console /nodefaultlib /entry:main /libpath:$(LIB_PATH) /MACHINE:X86
 LINKER_DEBUG_FLAGS := $(LINKER_FLAGS) /debug
 
-debug: bin\snake-debug.exe
-release: bin\snake.exe
+debug: bin\snax86-debug.exe
+release: bin\snax86.exe
 
-bin\snake.exe: bin_dir obj_dir $(OBJS)
+bin\snax86.exe: bin_dir obj_dir $(OBJS)
 	$(LINKER) $(LINKER_FLAGS) $(OBJS) $(LIBS) /out:$@
 	@echo "$@ has been created"
 
-bin\snake-debug.exe: bin_dir obj_dir $(OBJS_DEBUG)
+bin\snax86-debug.exe: bin_dir obj_dir $(OBJS_DEBUG)
 	$(LINKER) $(LINKER_DEBUG_FLAGS) $(OBJS_DEBUG) $(LIBS) /out:$@
 	@echo "$@ has been created"
 
-obj\snake-debug.obj: src\snake.asm
+obj\snax86-debug.obj: src\snax86.asm
 	$(ASM) $(ASM_DEBUG_FLAGS) $< -o $@
 
-obj\snake.obj: src\snake.asm
+obj\snax86.obj: src\snax86.asm
 	$(ASM) $(ASM_FLAGS) $< -o $@
 
 bin_dir: 
