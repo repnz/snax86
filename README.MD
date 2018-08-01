@@ -16,13 +16,11 @@ The code of the game is directly linked to Kernel32.lib and uses win32 console a
 To create snake.exe without debug symbols
 
 ```
-#!bash
 make release
 ```
 
 To create snake-debug.exe with debug symbols
 
 ```
-#!bash
 make debug
 ```
