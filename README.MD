@@ -1,6 +1,6 @@
 # Snax86 
 
-## What is it?
+## What is this?
 
 This is a Console Snake Game written in 0x86-32 Assembly Language for Windows Operating System.
 The code is assembled using Nasm and linked using LINK.exe (Microsoft Incremental Linker).
